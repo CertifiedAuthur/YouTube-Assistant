@@ -3,3 +3,4 @@ langchain
 langchain_openai
 langchain_text_splitters
 langchain_community
+youtube-transcript-api

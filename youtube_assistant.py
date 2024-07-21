@@ -5,7 +5,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 # Initialize OpenAI embeddings
 def initialize_openai(api_key: str):
@@ -77,3 +77,4 @@ if query and youtube_url and api_key:
     response = get_response_from_query(db, query, api_key)
     st.subheader("Answer")
     st.text(textwrap.fill(response, width=80))
+

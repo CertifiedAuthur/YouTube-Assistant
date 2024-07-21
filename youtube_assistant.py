@@ -1,7 +1,7 @@
-pip install langchain
-pip install streamlit
-pip install langchain_text_splitters
-pip install langchain_openai
+!pip install langchain
+!pip install streamlit
+!pip install langchain_text_splitters
+!pip install langchain_openai
 
 import streamlit as st
 import textwrap

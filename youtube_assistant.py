@@ -1,3 +1,8 @@
+pip install langchain
+pip install streamlit
+pip install langchain_text_splitters
+pip install langchain_openai
+
 import streamlit as st
 import textwrap
 from langchain.document_loaders import YoutubeLoader
@@ -7,9 +12,6 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from dotenv import load_dotenv
-
-load_dotenv()
 
 embeddings = OpenAIEmbeddings()
 

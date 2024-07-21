@@ -64,7 +64,7 @@ with st.sidebar:
             key="query"
         )
         api_key = st.text_area(
-            label ="Input your OpenAI_API_KEY",
+            label ="Input your OpenAI API Key",
             max_chars=56
         )
         submit_button = st.form_submit_button(label="Submit")

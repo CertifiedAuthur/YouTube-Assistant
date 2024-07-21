@@ -5,7 +5,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores import FAISS
 
 # Initialize OpenAI embeddings
 def initialize_openai(api_key: str):
@@ -15,8 +15,12 @@ def initialize_openai(api_key: str):
 
 def create_vector_db(video_url: str, api_key: str) -> FAISS:
     """Create a vector database from YouTube video transcripts."""
-    loader = YoutubeLoader.from_youtube_url(video_url)
-    transcript = loader.load()
+    try:
+        loader = YoutubeLoader.from_youtube_url(video_url)
+        transcript = loader.load()
+    except ImportError as e:
+        st.error(f"Error loading YouTube transcript: {e}")
+        return None
     
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     docs = text_splitter.split_documents(transcript)
@@ -27,30 +31,34 @@ def create_vector_db(video_url: str, api_key: str) -> FAISS:
 
 def get_response_from_query(db: FAISS, query: str, api_key: str, k: int = 4) -> str:
     """Generate a response to the query based on the vector database."""
-    docs = db.similarity_search(query, k=k)
-    docs_page_content = " ".join([d.page_content for d in docs])
-    
-    _, llm = initialize_openai(api_key)
-    prompt = PromptTemplate(
-        input_variables=["question", "docs"],
-        template="""
-        You are a helpful YouTube assistant that can answer questions about videos based on the video's transcript.
+    try:
+        docs = db.similarity_search(query, k=k)
+        docs_page_content = " ".join([d.page_content for d in docs])
         
-        Answer the following question: {question}
-        By searching the following video transcript: {docs}
+        _, llm = initialize_openai(api_key)
+        prompt = PromptTemplate(
+            input_variables=["question", "docs"],
+            template="""
+            You are a helpful YouTube assistant that can answer questions about videos based on the video's transcript.
+            
+            Answer the following question: {question}
+            By searching the following video transcript: {docs}
+            
+            Only use the factual information from the transcript to answer the question.
+            
+            If you feel like you don't have enough information to answer the question, say "I don't know".
+            
+            Your answers should be detailed.
+            """
+        )
         
-        Only use the factual information from the transcript to answer the question.
-        
-        If you feel like you don't have enough information to answer the question, say "I don't know".
-        
-        Your answers should be detailed.
-        """
-    )
-    
-    chain = LLMChain(llm=llm, prompt=prompt)
-    response = chain.run(question=query, docs=docs_page_content)
-    response = response.replace("\n", "")
-    return response
+        chain = LLMChain(llm=llm, prompt=prompt)
+        response = chain.run(question=query, docs=docs_page_content)
+        response = response.replace("\n", "")
+        return response
+    except Exception as e:
+        st.error(f"Error generating response: {e}")
+        return "An error occurred while generating the response."
 
 # --- Streamlit App ---
 st.title("YouTube Assistant")
@@ -74,7 +82,7 @@ with st.sidebar:
 
 if query and youtube_url and api_key:
     db = create_vector_db(youtube_url, api_key)
-    response = get_response_from_query(db, query, api_key)
-    st.subheader("Answer")
-    st.text(textwrap.fill(response, width=80))
-
+    if db:
+        response = get_response_from_query(db, query, api_key)
+        st.subheader("Answer")
+        st.text(textwrap.fill(response, width=80))

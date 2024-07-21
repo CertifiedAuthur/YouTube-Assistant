@@ -59,11 +59,11 @@ with st.sidebar:
     with st.form(key="my_form"):
         youtube_url = st.text_area(
             label="What is the YouTube video URL?",
-            max_chars=100
+            max_chars=50
         )
         query = st.text_area(
             label="Ask me about the video?",
-            max_chars=150,
+            max_chars=50,
             key="query"
         )
         api_key = st.text_area(

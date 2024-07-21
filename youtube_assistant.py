@@ -5,7 +5,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 # Initialize OpenAI embeddings
 def initialize_openai(api_key: str):

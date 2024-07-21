@@ -48,7 +48,7 @@ def get_response_from_query(db: FAISS, query: str, api_key: str, k: int = 4) -> 
             
             If you feel like you don't have enough information to answer the question, say "I don't know".
             
-            Your answers should be detailed.
+            Your answers should be detailed and end with full stop.
             """
         )
         
@@ -56,9 +56,15 @@ def get_response_from_query(db: FAISS, query: str, api_key: str, k: int = 4) -> 
         response = chain.run(question=query, docs=docs_page_content)
         response = response.replace("\n", "")
         return response
+
+        # Ensure the response ends with a full stop.
+        if not response.endswith('.'):
+            response += '.'
+
+        return response
     except Exception as e:
-        st.error(f"Error generating response: {e}")
-        return "An error occurred while generating the response."
+            st.error(f"Error generating response: {e}")
+            return "An error occurred while generating the response."
 
 # --- Streamlit App ---
 st.title("YouTube Assistant")

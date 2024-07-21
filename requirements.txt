@@ -2,4 +2,3 @@ streamlit
 langchain
 langchain_openai
 langchain_text_splitters
-textwrap
